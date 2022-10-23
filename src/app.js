@@ -103,7 +103,7 @@ app.post("/addContact",async (req, res) => {
 app.post("/show_contacts", async (req, res) => {
     const {mytoken}=req.body
     const verifiedtoken=  jwt.verify(mytoken,"process.env.SECRET_KEY")
-    const data = await ContactDetails.find({userRef:verifiedtoken.id}).limit(10)
+    const data = await ContactDetails.find({userRef:verifiedtoken.id})
     res.json({
         data: data
     })
@@ -124,7 +124,22 @@ app.delete("/delete/:id", async (req, res) => {
     }
 })
 
+app.post("/deletemany",async(req,res)=>{
+    const deletelist=req.body
+    // console.log(deletelist)
+    try{
+        deletelist.map(async(contact)=>{
+            await ContactDetails.deleteMany({_id:contact})
+        })
+        
 
+    }
+    catch(e){
+        res.json({
+            message: e.message
+        })
+    }
+})
 
 app.listen(port, () => {
     console.log(`your server is running at ${port}`)
